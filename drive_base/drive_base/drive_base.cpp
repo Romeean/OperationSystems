@@ -117,8 +117,33 @@ void GetDiskFreeSpaceExCustom(char letter) {
 
 	}
 	else {
-		cout << "There must be a problem with your input, or drive " << letter << " doesn't exist." << endl;
+		cout << "There must be a problem with your input or drive " << letter << " doesn't exist." << endl;
 
+	}
+
+}
+
+void GetSystemDirectoryCustom() {
+	char buffer[MAX_PATH];
+	UINT size = GetSystemDirectoryA(buffer, MAX_PATH);
+
+	if (size && size < MAX_PATH) {
+		cout << "System directory: " << buffer << endl;
+	}
+	else {
+		cout << "There is defenetly a problem with your computer" << endl;
+	}
+	
+}
+void GetCurrentDirectoryCustom() {
+	char buffer[MAX_PATH];
+	UINT size = GetCurrentDirectoryA(MAX_PATH, buffer);
+
+	if (size && size < MAX_PATH) {
+		cout << "Windows directory: " << buffer << endl;
+	}
+	else {
+		cout << "There is defenetly a problem with your computer" << endl;
 	}
 
 }
@@ -173,7 +198,8 @@ int main()
 			break;
 		};
 		case 2: {
-
+			GetSystemDirectoryCustom();
+			GetCurrentDirectoryCustom();
 		}
 		case 3: {
 
