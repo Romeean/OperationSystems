@@ -144,6 +144,57 @@ void GetCurrentDirectoryCustom() {
 	}
 	else {
 		cout << "There is defenetly a problem with your computer" << endl;
+
+	}
+
+}
+string FileAttributesEncode(int element) {
+	switch (element) {
+	case -1: return "Invalid";
+	case 1: return "Readonly";
+	case 2: return "Hidden";
+	case 4: return "System";
+	case 16: return "Directory";
+	case 32: return "Archive";
+	case 128: return "Normal";
+	case 256: return "Temporary";
+	case 2048: return "Compressed";
+	case 4096: return "Ofline";
+	
+	}
+}
+
+void GetFilesAttributesExCustom(const string& pathAttributes){
+
+	WIN32_FILE_ATTRIBUTE_DATA fileInfo;
+	bool result = GetFileAttributesExA(pathAttributes.c_str(), GetFileExInfoStandard, &fileInfo);
+
+	if (result) {
+
+		ULARGE_INTEGER time;
+		time.LowPart = fileInfo.ftCreationTime.dwLowDateTime;
+		time.HighPart = fileInfo.ftCreationTime.dwHighDateTime;
+
+		SYSTEMTIME stCreatedAt;
+		FileTimeToSystemTime(&fileInfo.ftCreationTime, &stCreatedAt);
+
+		SYSTEMTIME stLastTouched;
+		FileTimeToSystemTime(&fileInfo.ftLastAccessTime, &stLastTouched);
+
+		SYSTEMTIME stLastWriteTime;
+		FileTimeToSystemTime(&fileInfo.ftLastAccessTime, &stLastWriteTime);
+
+		uint64_t realFileSize = ((uint64_t)fileInfo.nFileSizeHigh << 32) | fileInfo.nFileSizeLow;
+
+
+		cout << "\n";
+		cout << "information for path: " << pathAttributes << endl;
+		cout << "attributes: " << FileAttributesEncode(fileInfo.dwFileAttributes) << endl;
+		cout << "created at: " << stCreatedAt.wDay << "." << stCreatedAt.wMonth << "." << stCreatedAt.wYear << endl;
+		cout << "last touched at: " << stLastTouched.wDay << "." << stLastTouched.wMonth << "." << stLastTouched.wYear << endl;
+		cout << "last write time at: " << stLastWriteTime.wDay << "." << stLastWriteTime.wMonth << "." << stLastWriteTime.wYear << endl;
+		cout << "total file size: " << realFileSize << " bytes" << endl;
+
 	}
 
 }
@@ -200,11 +251,21 @@ int main()
 		case 2: {
 			GetSystemDirectoryCustom();
 			GetCurrentDirectoryCustom();
+
+			break;
 		}
 		case 3: {
-
+			string pathAttributes;
+			cout << "Enter the directory path (e.g. C:\Windows\System32): ";
+			while (!(cin >> pathAttributes)) {
+				cout << "There must be a problem with input. Try again" << endl;
+				cin.clear();
+				cin.ignore((numeric_limits<streamsize>::max)(), '\n');
+			}
+			GetFilesAttributesExCustom(pathAttributes);
 		}
 		case 4: {
+
 
 		}
 		}
