@@ -208,9 +208,9 @@ void GetFileExtensionCustom(const string& directory, const string& extension ) {
 		return;
  	}
 
-	cout << "files with " << directory << " extensions" << endl;
+	cout << "files in " << directory << " with " << extension << " extension" << endl;
 	while (FindNextFileA(hFind, &findData)) {
-		cout << "file with " << directory << " is " << findData.cFileName << endl;
+		cout << "found " << findData.cFileName << endl;
 	}
 	FindClose(hFind);
 }
@@ -287,7 +287,7 @@ int main()
 		}
 		case 4: {
 			string directory;
-			cout << "Write desired directory(e.g C:\Windows): ";
+			cout << "Enter directory path (e.g C:\Windows): ";
 			while (!(cin >> directory)) {
 				cout << "Unknown input, try again" << endl;
 				cin.clear();
@@ -295,9 +295,9 @@ int main()
 			}
 			
 			string extension;
-			cout << "Write desired extension for the files(e.g .tsx, .exe, .txt): ";
+			cout << "Enter file extension (e.g .tsx, .exe, .txt): ";
 			while (!(cin >> extension)) {
-				cout << "Unknown input, try again" << endl;
+				cout << "Invalid input, please try again" << endl;
 				cin.clear();
 				cin.ignore((numeric_limits<streamsize>::max)(), '\n');
 			}
