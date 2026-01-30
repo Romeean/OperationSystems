@@ -196,7 +196,16 @@ void GetFilesAttributesExCustom(const string& pathAttributes){
 		cout << "total file size: " << realFileSize << " bytes" << endl;
 
 	}
+}
 
+void GetFileExtensionCustom(const string& directory, const string& extension ) {
+	string path = directory + "//*" + extension;
+
+	WIN32_FIND_DATAA findData;
+	HANDLE hFind = FindFirstFileA(path.c_str(), &findData);
+
+		cout << "files with " << directory << " extensions" << endl;
+		cout << "file with " << findData.cFileName << endl;
 }
 
 int main()
@@ -263,10 +272,27 @@ int main()
 				cin.ignore((numeric_limits<streamsize>::max)(), '\n');
 			}
 			GetFilesAttributesExCustom(pathAttributes);
+			break;
 		}
 		case 4: {
+			string directory;
+			cout << "Write desired directory(e.g C:\Windows): ";
+			while (!(cin >> directory)) {
+				cout << "Unknown input, try again" << endl;
+				cin.clear();
+				cin.ignore((numeric_limits<streamsize>::max)(), '\n');
+			}
+			
+			string extension;
+			cout << "Write desired extension for the files(e.g .tsx, .exe, .txt): ";
+			cin >> extension;
 
-
+			while (!(cin >> extension)) {
+				cout << "Unknown input, try again" << endl;
+				cin.clear();
+				cin.ignore((numeric_limits<streamsize>::max)(), '\n');
+			}
+			GetFileExtensionCustom(directory, extension);
 		}
 		}
 	}
