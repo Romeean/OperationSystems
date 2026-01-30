@@ -120,7 +120,6 @@ void GetDiskFreeSpaceExCustom(char letter) {
 		cout << "There must be a problem with your input or drive " << letter << " doesn't exist." << endl;
 
 	}
-
 }
 
 void GetSystemDirectoryCustom() {
@@ -199,13 +198,21 @@ void GetFilesAttributesExCustom(const string& pathAttributes){
 }
 
 void GetFileExtensionCustom(const string& directory, const string& extension ) {
-	string path = directory + "//*" + extension;
+	string path = directory + "\\*" + extension;
 
 	WIN32_FIND_DATAA findData;
 	HANDLE hFind = FindFirstFileA(path.c_str(), &findData);
 
-		cout << "files with " << directory << " extensions" << endl;
-		cout << "file with " << findData.cFileName << endl;
+	if (hFind == INVALID_HANDLE_VALUE) {
+		cout << "files with " << extension  << " doesn't exist";
+		return;
+ 	}
+
+	cout << "files with " << directory << " extensions" << endl;
+	while (FindNextFileA(hFind, &findData)) {
+		cout << "file with " << directory << " is " << findData.cFileName << endl;
+	}
+	FindClose(hFind);
 }
 
 int main()
@@ -218,7 +225,11 @@ int main()
 		cout << "2. Information about Operation System" << endl;
 		cout << "3. All file's attributes in specific directory" << endl;
 		cout << "4. All files with .txt extension" << endl;
-		if (!(cin >> choice)) {
+		cout << "\n";
+
+		cout << "Your choice: ";
+
+		while (!(cin >> choice)) {
 			cout << "Unknown command \n";
 			cin.clear();
 			cin.ignore((numeric_limits<streamsize>::max)(), '\n');
@@ -285,8 +296,6 @@ int main()
 			
 			string extension;
 			cout << "Write desired extension for the files(e.g .tsx, .exe, .txt): ";
-			cin >> extension;
-
 			while (!(cin >> extension)) {
 				cout << "Unknown input, try again" << endl;
 				cin.clear();
