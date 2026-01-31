@@ -45,6 +45,10 @@ DWORD	AttributeDwordCreator(const string& element) {
 		result = FILE_ATTRIBUTE_ARCHIVE;
 		return result;
 	}
+	if (element == "normal") {
+		result = FILE_ATTRIBUTE_NORMAL;
+		return result;
+	}
 
 	return result;
 }
@@ -56,7 +60,6 @@ DWORD WINAPI ToggleFileAttribute(const string& directory ) {
 	DWORD toggledAttribute = currentAttribute ^ currentAttribute;
 
 	bool result = SetFileAttributesA(directory.c_str(), toggledAttribute);
-
 
 	return 0;
 }
@@ -71,23 +74,40 @@ DWORD WINAPI AddFileAttribute(const string& directory) {
 		cin.clear();
 		cin.ignore((numeric_limits<streamsize>::max)(), '\n');
 	}
+	
+	DWORD newAttribute = AttributeDwordCreator(nAttribute);
+	DWORD addedAttribute = currentAttribute | newAttribute;
 
-
-
-	DWORD addedAttribute = currentAttribute | newAttribute
+	bool result = SetFileAttributesA(directory.c_str(), addedAttribute);
 	return 0;
 }
 DWORD WINAPI DeleteFileAttribute(const string& directory) {
+	
+	string nAttribute;
+	while (!(cin >> nAttribute)) {
+		cout << "Unknown input. Try again";
+		cin.clear();
+		cin.ignore((numeric_limits<streamsize>::max)(), '\n');
+	}
 
+	DWORD currentAttribute = GetFileAttributesA(directory.c_str());
+	DWORD newAttribute = AttributeDwordCreator(nAttribute);
+	DWORD deletedAttribute = currentAttribute & ~newAttribute;
+
+	bool result = SetFileAttributesA(directory.c_str(), deletedAttribute);
+	if (result) {
+		// сделать активным флаг изменения атрибута
+	}
 	return 0;
 }
+
 DWORD WINAPI ChangeAttributeObserver(LPVOID lpParams) {
+	// WaitForSingleObject(EventName);
 
 
 
 	return 0;
 }
-
 DWORD WINAPI ChangeFileAttributes(LPVOID lpParams) {
 
 	string directory;
@@ -125,11 +145,6 @@ DWORD WINAPI ChangeFileAttributes(LPVOID lpParams) {
 	return 0;
 }
 
-DWORD WINAPI OutputAttributesChange(LPVOID lpParams) {
-	return 0;
-}
-
-
 
 int main()
 {
@@ -157,13 +172,15 @@ int main()
 		}
  		switch (choice) {
 			case 1: {
-
+				AddFileAttribute(directory.c_str());
 				break;
 			}
 			case 2: {
+				ToggleFileAttribute(directory.c_str());
 				break;
 			}
 			case 3: {
+				DeleteFileAttribute(directory.c_str());
 				break;
 			}
 		}
