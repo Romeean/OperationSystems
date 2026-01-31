@@ -7,8 +7,12 @@ using namespace std;
 // Другий потік повинен повідомляти користувача про зміни у файловій системі. ReadDirectoryChangesW
 
 
-HANDLE hChangeAttributesThread, hOutputAttributesChangeThread;
-DWORD dwChangeAttributesId, hOutputAttributesChangeId;
+DWORD dwToggleObjectAttributeId, dwAddObjectAttributeId, dwDeleteObjectAttributeId;
+HANDLE hToggleObjectAttributeThread, hAddObjectAttributeThread, hDeleteObjectAttributeThread;
+
+DWORD dwChangeAttributeObserverId;
+HANDLE hChangeAttributeObserverThread;
+
 
 string OutputAttributeEncode(DWORD element) {
 	
@@ -25,9 +29,67 @@ string OutputAttributeEncode(DWORD element) {
 
 	return "No attributes at all! Try again.";
 }
+DWORD	AttributeDwordCreator(const string& element) {
+	DWORD result = INVALID_FILE_ATTRIBUTES;
 
-DWORD WINAPI ChangeFileAttributes(LPVOID lpParam) {
 	
+	if (element == "directory") {
+		result = FILE_ATTRIBUTE_DIRECTORY;
+		return result;
+	};
+	if (element == "hidden") {
+		result = FILE_ATTRIBUTE_HIDDEN;
+		return result;
+	}
+	if (element == "archive") {
+		result = FILE_ATTRIBUTE_ARCHIVE;
+		return result;
+	}
+
+	return result;
+}
+
+
+DWORD WINAPI ToggleFileAttribute(const string& directory ) {
+
+	DWORD currentAttribute = GetFileAttributesA(directory.c_str());
+	DWORD toggledAttribute = currentAttribute ^ currentAttribute;
+
+	bool result = SetFileAttributesA(directory.c_str(), toggledAttribute);
+
+
+	return 0;
+}
+DWORD WINAPI AddFileAttribute(const string& directory) {
+	string nAttribute;
+
+	DWORD currentAttribute = GetFileAttributesA(directory.c_str());
+	
+	cout << "Which attribute you want to add? Write it(e.g. normal, hidden, archive, directory): ";
+	while(!(cin >> nAttribute)){
+		cout << "Invalid input. Try again";
+		cin.clear();
+		cin.ignore((numeric_limits<streamsize>::max)(), '\n');
+	}
+
+
+
+	DWORD addedAttribute = currentAttribute | newAttribute
+	return 0;
+}
+DWORD WINAPI DeleteFileAttribute(const string& directory) {
+
+	return 0;
+}
+DWORD WINAPI ChangeAttributeObserver(LPVOID lpParams) {
+
+
+
+	return 0;
+}
+
+DWORD WINAPI ChangeFileAttributes(LPVOID lpParams) {
+
 	string directory;
 	cout << "Write down directory which attribute you want to change: ";
 	while (!(cin >> directory)) {
@@ -37,7 +99,27 @@ DWORD WINAPI ChangeFileAttributes(LPVOID lpParam) {
 	}
 	DWORD currentAttribute = GetFileAttributesA(directory.c_str());
 	string result = OutputAttributeEncode(currentAttribute);
-	cout << "Attributes information of " << directory << ": " << result;
+	cout << "path " << directory << " has " << ": " << result;
+
+
+
+	string newAttributeName;
+	cout << "Which attribute you want to set up(e.g. directory, hidden, normal):";
+	while (!(cin >> newAttributeName)) {
+		cout << "Incorrect input! Try again";
+		cin.clear();
+		cin.ignore((numeric_limits<streamsize>::max)(), '\n');
+	}
+
+	DWORD additionalAttribute = AttributeDwordCreator(newAttributeName);
+
+
+	DWORD newAttribute = currentAttribute | additionalAttribute;
+	SetFileAttributesA(directory.c_str(), newAttribute);
+
+	DWORD updatedAttribute = GetFileAttributesA(directory.c_str());
+
+	cout << "updated attribute for " << directory << ": " << OutputAttributeEncode(updatedAttribute);
 
 
 	return 0;
@@ -51,15 +133,45 @@ DWORD WINAPI OutputAttributesChange(LPVOID lpParams) {
 
 int main()
 {
-	hChangeAttributesThread = CreateThread(NULL, 0, ChangeFileAttributes, NULL, 0, &dwChangeAttributesId);
-	hOutputAttributesChangeThread = CreateThread(NULL, 0, OutputAttributesChange, NULL, 0, &dwChangeAttributesId);
+	int choice = -1;
+	hChangeAttributeObserverThread = CreateThread(NULL, 0, ChangeAttributeObserver, NULL, 0, &dwChangeAttributeObserverId);
+
+	while (true) {
+
+		string directory;
+		cout << "Write down directory which attribute you want to change: ";
+		while (!(cin >> directory)) {
+			cout << "Invalid input! Try again";
+			cin.clear();
+			cin.ignore((numeric_limits<streamsize>::max)(), '\n');
+		}
+
+		cout << "What do you want to do with this object?" << endl;
+		cout << "1. Add attribute " << endl;
+		cout << "2. Toggle attribute" << endl;
+		cout << "3. Delete attribute " << endl;
+		while(!(cin >> choice)){
+			cout << "Invalid input! Try again";
+			cin.clear();
+			cin.ignore((numeric_limits<streamsize>::max)(), '\n');
+		}
+ 		switch (choice) {
+			case 1: {
+
+				break;
+			}
+			case 2: {
+				break;
+			}
+			case 3: {
+				break;
+			}
+		}
 
 
-	WaitForSingleObject(hChangeAttributesThread, INFINITE);
-	WaitForSingleObject(hOutputAttributesChangeThread, INFINITE);
 
-	CloseHandle(hChangeAttributesThread);
-	CloseHandle(hOutputAttributesChangeThread);
+	};
+
 
 	return 0;
 }
