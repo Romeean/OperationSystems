@@ -13,7 +13,6 @@ HANDLE hToggleObjectAttributeThread, hAddObjectAttributeThread, hDeleteObjectAtt
 DWORD dwChangeAttributeObserverId;
 HANDLE hChangeAttributeObserverThread;
 
-
 string OutputAttributeEncode(DWORD element) {
 	
 	if (element == INVALID_FILE_ATTRIBUTES) return "Ooh, invalid attributes";
@@ -102,65 +101,45 @@ DWORD WINAPI DeleteFileAttribute(const string& directory) {
 }
 
 DWORD WINAPI ChangeAttributeObserver(LPVOID lpParams) {
-	// WaitForSingleObject(EventName);
 
+	string* pointerDirectory = (string*)lpParams;
+	string directory = *pointerDirectory;
 
+	const int BUFFER_SIZE = 4096;
+	char buffer[BUFFER_SIZE];
+	DWORD dwBytesReturned;
 
-	return 0;
-}
-DWORD WINAPI ChangeFileAttributes(LPVOID lpParams) {
-
-	string directory;
-	cout << "Write down directory which attribute you want to change: ";
-	while (!(cin >> directory)) {
-		cout << "Incorrect input! Try again: ";
-		cin.clear();
-		cin.ignore((numeric_limits<streamsize>::max)(), '\n');
+	HANDLE hDirectory = CreateFileA(directory.c_str(), FILE_LIST_DIRECTORY, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
+	while (true) {
+		if (ReadDirectoryChangesW(hDirectory, buffer, BUFFER_SIZE, FALSE, FILE_NOTIFY_CHANGE_ATTRIBUTES, &dwBytesReturned, NULL, NULL)) {
+			FILE_NOTIFY_INFORMATION* pointerNotify = (FILE_NOTIFY_INFORMATION*)buffer;
+			if (pointerNotify->Action == FILE_ACTION_MODIFIED) {
+				cout << "NOTIFICATION: object attributes" << directory << "have been changed";
+			}
+		}
 	}
-	DWORD currentAttribute = GetFileAttributesA(directory.c_str());
-	string result = OutputAttributeEncode(currentAttribute);
-	cout << "path " << directory << " has " << ": " << result;
-
-
-
-	string newAttributeName;
-	cout << "Which attribute you want to set up(e.g. directory, hidden, normal):";
-	while (!(cin >> newAttributeName)) {
-		cout << "Incorrect input! Try again";
-		cin.clear();
-		cin.ignore((numeric_limits<streamsize>::max)(), '\n');
-	}
-
-	DWORD additionalAttribute = AttributeDwordCreator(newAttributeName);
-
-
-	DWORD newAttribute = currentAttribute | additionalAttribute;
-	SetFileAttributesA(directory.c_str(), newAttribute);
-
-	DWORD updatedAttribute = GetFileAttributesA(directory.c_str());
-
-	cout << "updated attribute for " << directory << ": " << OutputAttributeEncode(updatedAttribute);
-
-
+	
 	return 0;
 }
 
 
 int main()
-{
+{                                                                                                                                       
 	int choice = -1;
-	hChangeAttributeObserverThread = CreateThread(NULL, 0, ChangeAttributeObserver, NULL, 0, &dwChangeAttributeObserverId);
+	
+	string directory;
+	cout << "Write down directory which attribute you want to change: ";
+	while (!(cin >> directory)) {
+		cout << "Invalid input! Try again";
+		cin.clear();
+		cin.ignore((numeric_limits<streamsize>::max)(), '\n');
+	}
+
+	string* pointerData = new string(directory);
+
+	hChangeAttributeObserverThread = CreateThread(NULL, 0, ChangeAttributeObserver, pointerData, 0, &dwChangeAttributeObserverId);
 
 	while (true) {
-
-		string directory;
-		cout << "Write down directory which attribute you want to change: ";
-		while (!(cin >> directory)) {
-			cout << "Invalid input! Try again";
-			cin.clear();
-			cin.ignore((numeric_limits<streamsize>::max)(), '\n');
-		}
-
 		cout << "What do you want to do with this object?" << endl;
 		cout << "1. Add attribute " << endl;
 		cout << "2. Toggle attribute" << endl;
@@ -189,6 +168,6 @@ int main()
 
 	};
 
-
+	delete pointerData;
 	return 0;
 }
