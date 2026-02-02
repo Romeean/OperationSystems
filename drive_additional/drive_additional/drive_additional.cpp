@@ -53,19 +53,28 @@ DWORD	AttributeDwordCreator(const string& element) {
 }
 
 
-DWORD WINAPI ToggleFileAttribute(const string& directory ) {
+void ToggleFileAttribute(const string& directory ) {
+
+	string nAttribute;
+	cout << "Which attribute you want to add? Write it(e.g. normal, hidden, archive, directory): ";
+	while (!(cin >> nAttribute)) {
+		cout << "Invalid input. Try again";
+		cin.clear();
+		cin.ignore((numeric_limits<streamsize>::max)(), '\n');
+	}
+
 
 	DWORD currentAttribute = GetFileAttributesA(directory.c_str());
-	DWORD toggledAttribute = currentAttribute ^ currentAttribute;
+	DWORD newAttribute = AttributeDwordCreator(nAttribute);
+	DWORD toggledAttribute = currentAttribute ^ newAttribute;
 
 	bool result = SetFileAttributesA(directory.c_str(), toggledAttribute);
 
-	return 0;
+	return;
 }
-DWORD WINAPI AddFileAttribute(const string& directory) {
+void AddFileAttribute(const string& directory) {
 	string nAttribute;
 
-	DWORD currentAttribute = GetFileAttributesA(directory.c_str());
 	
 	cout << "Which attribute you want to add? Write it(e.g. normal, hidden, archive, directory): ";
 	while(!(cin >> nAttribute)){
@@ -73,16 +82,19 @@ DWORD WINAPI AddFileAttribute(const string& directory) {
 		cin.clear();
 		cin.ignore((numeric_limits<streamsize>::max)(), '\n');
 	}
-	
+
+	DWORD currentAttribute = GetFileAttributesA(directory.c_str());
 	DWORD newAttribute = AttributeDwordCreator(nAttribute);
 	DWORD addedAttribute = currentAttribute | newAttribute;
 
 	bool result = SetFileAttributesA(directory.c_str(), addedAttribute);
-	return 0;
+	return;
 }
-DWORD WINAPI DeleteFileAttribute(const string& directory) {
+void DeleteFileAttribute(const string& directory) {
 	
 	string nAttribute;
+	cout << "Which attribute you want to delete? Write it(e.g. normal, hidden, archive, directory): ";
+
 	while (!(cin >> nAttribute)) {
 		cout << "Unknown input. Try again";
 		cin.clear();
@@ -97,7 +109,7 @@ DWORD WINAPI DeleteFileAttribute(const string& directory) {
 	if (result) {
 		// сделать активным флаг изменения атрибута
 	}
-	return 0;
+	return;
 }
 
 DWORD WINAPI ChangeAttributeObserver(LPVOID lpParams) {
@@ -105,20 +117,22 @@ DWORD WINAPI ChangeAttributeObserver(LPVOID lpParams) {
 	string* pointerDirectory = (string*)lpParams;
 	string directory = *pointerDirectory;
 
+	size_t lastSlash = directory.find_last_of("\\/");
+	string parentDirectory = directory.substr(0, lastSlash);
+
 	const int BUFFER_SIZE = 4096;
 	char buffer[BUFFER_SIZE];
 	DWORD dwBytesReturned;
 
-	HANDLE hDirectory = CreateFileA(directory.c_str(), FILE_LIST_DIRECTORY, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
+	HANDLE hDirectory = CreateFileA(parentDirectory.c_str(), FILE_LIST_DIRECTORY, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
 	while (true) {
 		if (ReadDirectoryChangesW(hDirectory, buffer, BUFFER_SIZE, FALSE, FILE_NOTIFY_CHANGE_ATTRIBUTES, &dwBytesReturned, NULL, NULL)) {
 			FILE_NOTIFY_INFORMATION* pointerNotify = (FILE_NOTIFY_INFORMATION*)buffer;
 			if (pointerNotify->Action == FILE_ACTION_MODIFIED) {
-				cout << "NOTIFICATION: object attributes" << directory << "have been changed";
+				cout << "NOTIFICATION: object attributes " << directory << " have been changed" << endl;
 			}
 		}
 	}
-	
 	return 0;
 }
 
@@ -140,6 +154,7 @@ int main()
 	hChangeAttributeObserverThread = CreateThread(NULL, 0, ChangeAttributeObserver, pointerData, 0, &dwChangeAttributeObserverId);
 
 	while (true) {
+		cout << '\n';
 		cout << "What do you want to do with this object?" << endl;
 		cout << "1. Add attribute " << endl;
 		cout << "2. Toggle attribute" << endl;
@@ -163,9 +178,6 @@ int main()
 				break;
 			}
 		}
-
-
-
 	};
 
 	delete pointerData;
