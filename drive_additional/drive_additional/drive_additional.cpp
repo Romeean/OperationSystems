@@ -15,15 +15,15 @@ HANDLE hChangeAttributeObserverThread;
 
 string OutputAttributeEncode(DWORD element) {
 	
-	if (element == INVALID_FILE_ATTRIBUTES) return "Ooh, invalid attributes";
+	if (element == INVALID_FILE_ATTRIBUTES) return " Invalid attribute";
 
 
-	if (element & FILE_ATTRIBUTE_READONLY) return " Readonly attribute";
-	if (element & FILE_ATTRIBUTE_HIDDEN) return " Hidden attribute";
-	if (element & FILE_ATTRIBUTE_SYSTEM) return " System attribute";
-	if (element & FILE_ATTRIBUTE_DIRECTORY) return " Directory attribute";
-	if (element & FILE_ATTRIBUTE_ARCHIVE) return " Archive attribute";
-	if (element & FILE_ATTRIBUTE_NORMAL) return " Normal attribute";
+	if (element & FILE_ATTRIBUTE_READONLY) return " Readonly";
+	if (element & FILE_ATTRIBUTE_HIDDEN) return " Hidden";
+	if (element & FILE_ATTRIBUTE_SYSTEM) return " System";
+	if (element & FILE_ATTRIBUTE_DIRECTORY) return " Directory";
+	if (element & FILE_ATTRIBUTE_ARCHIVE) return " Archive";
+	if (element & FILE_ATTRIBUTE_NORMAL) return " Normal";
 	
 
 	return "No attributes at all! Try again.";
@@ -56,7 +56,7 @@ DWORD	AttributeDwordCreator(const string& element) {
 void ToggleFileAttribute(const string& directory ) {
 
 	string nAttribute;
-	cout << "Which attribute you want to add? Write it(e.g. normal, hidden, archive, directory): ";
+	cout << "Enter attribute to toggle (readonly, hidden, archive, normal): ";
 	while (!(cin >> nAttribute)) {
 		cout << "Invalid input. Try again";
 		cin.clear();
@@ -65,18 +65,25 @@ void ToggleFileAttribute(const string& directory ) {
 
 
 	DWORD currentAttribute = GetFileAttributesA(directory.c_str());
+	if (currentAttribute == INVALID_FILE_ATTRIBUTES) {
+		cout << "Directive not found" << endl;
+		return;
+	}
 	DWORD newAttribute = AttributeDwordCreator(nAttribute);
 	DWORD toggledAttribute = currentAttribute ^ newAttribute;
 
 	bool result = SetFileAttributesA(directory.c_str(), toggledAttribute);
-
+	if (!result) {
+		cout << "Failed to apply file attribute" << endl;
+		return;
+	}
 	return;
 }
 void AddFileAttribute(const string& directory) {
 	string nAttribute;
 
 	
-	cout << "Which attribute you want to add? Write it(e.g. normal, hidden, archive, directory): ";
+	cout << "Enter attribute to add (readonly, hidden, archive, normal): ";
 	while(!(cin >> nAttribute)){
 		cout << "Invalid input. Try again";
 		cin.clear();
@@ -84,30 +91,44 @@ void AddFileAttribute(const string& directory) {
 	}
 
 	DWORD currentAttribute = GetFileAttributesA(directory.c_str());
+	if (currentAttribute == INVALID_FILE_ATTRIBUTES) {
+		cout << "Directive didn't found" << endl;
+		return;
+	}
 	DWORD newAttribute = AttributeDwordCreator(nAttribute);
 	DWORD addedAttribute = currentAttribute | newAttribute;
 
 	bool result = SetFileAttributesA(directory.c_str(), addedAttribute);
+	if (!result) {
+		cout << "file attribute didn't apply" << endl;
+		return;
+	}
 	return;
 }
 void DeleteFileAttribute(const string& directory) {
 	
 	string nAttribute;
-	cout << "Which attribute you want to delete? Write it(e.g. normal, hidden, archive, directory): ";
+	cout << "Enter attribute to delete (readonly, hidden, archive, normal): ";
+
 
 	while (!(cin >> nAttribute)) {
-		cout << "Unknown input. Try again";
+		cout << "Invalid input. Try again";
 		cin.clear();
 		cin.ignore((numeric_limits<streamsize>::max)(), '\n');
 	}
 
 	DWORD currentAttribute = GetFileAttributesA(directory.c_str());
+	if (currentAttribute == INVALID_FILE_ATTRIBUTES) {
+		cout << "Directive didn't found" << endl;
+		return;
+	}
 	DWORD newAttribute = AttributeDwordCreator(nAttribute);
 	DWORD deletedAttribute = currentAttribute & ~newAttribute;
 
 	bool result = SetFileAttributesA(directory.c_str(), deletedAttribute);
-	if (result) {
-		// сделать активным флаг изменения атрибута
+	if (!result) {
+		cout << "file attribute didn't apply" << endl;
+		return;
 	}
 	return;
 }
@@ -142,9 +163,9 @@ int main()
 	int choice = -1;
 	
 	string directory;
-	cout << "Write down directory which attribute you want to change: ";
+	cout << "Enter directory path: ";
 	while (!(cin >> directory)) {
-		cout << "Invalid input! Try again";
+		cout << "Invalid input! Try again ";
 		cin.clear();
 		cin.ignore((numeric_limits<streamsize>::max)(), '\n');
 	}
