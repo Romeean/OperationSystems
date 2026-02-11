@@ -28,6 +28,7 @@ string OutputAttributeEncode(DWORD element) {
 
 	return "No attributes at all! Try again.";
 }
+
 DWORD	AttributeDwordCreator(const string& element) {
 	DWORD result = INVALID_FILE_ATTRIBUTES;
 
@@ -51,7 +52,6 @@ DWORD	AttributeDwordCreator(const string& element) {
 
 	return result;
 }
-
 
 void ToggleFileAttribute(const string& directory ) {
 
@@ -79,6 +79,7 @@ void ToggleFileAttribute(const string& directory ) {
 	}
 	return;
 }
+
 void AddFileAttribute(const string& directory) {
 	string nAttribute;
 
@@ -105,6 +106,7 @@ void AddFileAttribute(const string& directory) {
 	}
 	return;
 }
+
 void DeleteFileAttribute(const string& directory) {
 	
 	string nAttribute;

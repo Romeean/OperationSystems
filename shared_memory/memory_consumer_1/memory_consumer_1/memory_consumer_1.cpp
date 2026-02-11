@@ -1,5 +1,7 @@
 ﻿#include <iostream>
+#include "merge_sort.h"
 #include <windows.h>
+
 
 using namespace std;
 
@@ -23,8 +25,6 @@ int main()
 			sharedArray[i] = 0;
 		}
 	}
-	cout << "Consumer 1 delete srabotal " << endl;
-
 	SetEvent(hSortElementsEvent);
 	
 	WaitForSingleObject(hDeleteNegativeElementsEvent, INFINITE);
@@ -35,12 +35,12 @@ int main()
 			sharedArray[i] = 0;
 		}
 	}
-	cout << "Consumer 2 delete srabotal " << endl;
 	SetEvent(hSortElementsEvent);
 	ResetEvent(hDeleteNegativeElementsEvent);
 
 	
 	CloseHandle(hDeleteNegativeElementsEvent);
 	CloseHandle(hSortElementsEvent);
+	CloseHandle(hSharedArray);
 	return 0;
 }

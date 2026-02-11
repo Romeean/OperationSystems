@@ -1,0 +1,2 @@
+#define MERGESORT_API __declspec(dllexport)
+#define MERGESORT_API __declspec(dllimport)

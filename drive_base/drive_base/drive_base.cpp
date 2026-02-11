@@ -51,14 +51,18 @@ string DriveTypeEncode(int element) {
 		break;
 	}
 	case 3: {
-		return " network";
+		return " fixed";
 		break;
 	}
 	case 4: {
-		return " CDROM/DVD";
+		return " remote";
 		break;
 	}
 	case 5: {
+		return " CDROM/DVD";
+		break;
+	}
+	case 6: {
 		return " RAM";
 		break;
 	}
@@ -118,7 +122,6 @@ void GetDiskFreeSpaceExCustom(char letter) {
 	}
 	else {
 		cout << "There must be a problem with your input or drive " << letter << " doesn't exist." << endl;
-
 	}
 }
 
@@ -198,20 +201,23 @@ void GetFilesAttributesExCustom(const string& pathAttributes){
 }
 
 void GetFileExtensionCustom(const string& directory, const string& extension ) {
+	
 	string path = directory + "\\*" + extension;
-
 	WIN32_FIND_DATAA findData;
 	HANDLE hFind = FindFirstFileA(path.c_str(), &findData);
 
 	if (hFind == INVALID_HANDLE_VALUE) {
-		cout << "files with " << extension  << " doesn't exist";
+		cout << "files with " << extension << " doesn't exist";
 		return;
- 	}
+	}
 
 	cout << "files in " << directory << " with " << extension << " extension" << endl;
+	cout << "found " << findData.cFileName << endl;
+
 	while (FindNextFileA(hFind, &findData)) {
 		cout << "found " << findData.cFileName << endl;
 	}
+	
 	FindClose(hFind);
 }
 

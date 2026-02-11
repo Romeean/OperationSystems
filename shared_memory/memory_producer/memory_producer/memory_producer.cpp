@@ -12,6 +12,7 @@ wchar_t path2[] = L"C:\\Users\\user\\source\\repos\\OperationSystems\\shared_mem
 int main()
 {
   srand(static_cast<unsigned int>(time(0)));
+
   // создание Ивентов
   HANDLE hDeleteNegativeElementsEvent, hSortElementsEvent, hReadyToOutPut;
 
@@ -47,7 +48,6 @@ int main()
   int sizeInBytes = (digitsQuontity * sizeof(int) + sizeof(int));
   HANDLE hSharedArray = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeInBytes, L"sharedArray");
 
-
   void* pointerBuff = MapViewOfFile(hSharedArray, FILE_MAP_ALL_ACCESS, 0, 0, 0);
   int* sharedArray = (int*)pointerBuff;
 
@@ -64,15 +64,14 @@ int main()
   if (!CreateProcess(NULL, path2, NULL, NULL, FALSE, 0, NULL, NULL, &siSecondProducer, &piSecondProducer)) {
     cout << "Error starting Consumer 1: " << GetLastError() << endl;
   }
+
   SetEvent(hDeleteNegativeElementsEvent);
-  
   WaitForSingleObject(hReadyToOutPut, INFINITE);
+
   cout << "Sorted array: " << endl;
   for (int i = 1; i < digitsQuontity + 1; i++) {
-    cout << sharedArray[i] << " ,";
+    cout << sharedArray[i] << ", ";
   }
-
-
 
   CloseHandle(hDeleteNegativeElementsEvent);
   CloseHandle(hSortElementsEvent);
