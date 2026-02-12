@@ -67,9 +67,3 @@ MERGESORT_API void runMergeSort( vector<int>& array) {
   array = merge_sort(array);
 }
 
-
-// Конструктор для экспортированного класса.
-Cmergesort::Cmergesort()
-{
-    return;
-}

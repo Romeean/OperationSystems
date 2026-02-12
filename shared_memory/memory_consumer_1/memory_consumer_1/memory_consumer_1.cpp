@@ -1,7 +1,6 @@
 ﻿#include <iostream>
-#include "merge_sort.h"
 #include <windows.h>
-
+#include "merge_sort.h"
 
 using namespace std;
 
@@ -17,24 +16,42 @@ int main()
 
 	int arrayLength = sharedArray[0];
 	int firstPart = arrayLength / 2;
-	
+
+
 	WaitForSingleObject(hDeleteNegativeElementsEvent, INFINITE);
 	ResetEvent(hDeleteNegativeElementsEvent);
+	
+	vector<int> sortedFirstPart;
 	for (int i = 1; i < firstPart; i++) {
-		if (sharedArray[i] < 0) {
-			sharedArray[i] = 0;
-		}
+		sortedFirstPart.push_back(sharedArray[i]);
 	}
+	runMergeSort(sortedFirstPart);
+
+	for (int i = 1; i < firstPart; i++) {
+		sharedArray[i] = sortedFirstPart[i - 1];
+	}
+
 	SetEvent(hSortElementsEvent);
 	
 	WaitForSingleObject(hDeleteNegativeElementsEvent, INFINITE);
 	ResetEvent(hDeleteNegativeElementsEvent);
 
-	for (int i = firstPart; i <= arrayLength; i++) {
-		if (sharedArray[i] < 0) {
-			sharedArray[i] = 0;
+	vector<int> secondPartOfArray;
+	for (int i = firstPart; i < arrayLength; i++) {
+		if (sharedArray[i] >= -1) {
+			secondPartOfArray.push_back(sharedArray[i]);
+		}
+		else {
+			secondPartOfArray.push_back(0);
 		}
 	}
+
+	int j = 0;
+	for (int i = firstPart; i < arrayLength; i++) {
+		sharedArray[i] = secondPartOfArray[j];
+		j++;
+	};
+
 	SetEvent(hSortElementsEvent);
 	ResetEvent(hDeleteNegativeElementsEvent);
 

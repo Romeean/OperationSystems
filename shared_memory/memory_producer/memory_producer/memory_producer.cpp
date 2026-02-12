@@ -9,6 +9,7 @@ using namespace std;
 wchar_t path1[] = L"C:\\Users\\user\\source\\repos\\OperationSystems\\shared_memory\\memory_consumer_1\\x64\\Debug\\memory_consumer_1.exe";
 wchar_t path2[] = L"C:\\Users\\user\\source\\repos\\OperationSystems\\shared_memory\\memory_consumer_2\\x64\\Debug\\memory_consumer_2.exe";
 
+
 int main()
 {
   srand(static_cast<unsigned int>(time(0)));
