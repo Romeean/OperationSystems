@@ -2,32 +2,29 @@
 #include <windows.h>
 #include <vector>
 #include <set>
-#include <merge_sort.h>
 
 using namespace std;
 
 
 int main()
 {
-	HANDLE hSharedArray = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE, L"sharedArray");
-	HANDLE hDeleteNegativeElementsEvent = OpenEvent(EVENT_ALL_ACCESS, FALSE, L"Delete");
-	HANDLE hSortElementsEvent = OpenEvent(EVENT_ALL_ACCESS, FALSE, L"Sort");
-	HANDLE hReadyToOutPut = OpenEvent(EVENT_ALL_ACCESS, FALSE, L"Output");
+	
+	HANDLE hDataFilled = OpenEvent(EVENT_ALL_ACCESS, FALSE, L"DataFilled");
+	HANDLE hSharedArray = OpenFileMapping(FILE_ALL_ACCESS, FALSE, L"sharedArray");
 
 	// ЭТУ ЧАСТЬ НУЖНО ПОДРОБНЕЕ ИЗУЧИТЬ
 	void* pointerBuffer = MapViewOfFile(hSharedArray, FILE_MAP_ALL_ACCESS, 0, 0, 0);
 	int* sharedArray = (int*)pointerBuffer;
 
 	int arrayLength = sharedArray[0];
-	int firstPart = arrayLength / 2;
+	int middle = arrayLength / 2;
 	
 	// СОРТИРВОКА ВТОРОЙ ПОЛОВИНЫ МАССИВА
-	WaitForSingleObject(hSortElementsEvent, INFINITE);
-	ResetEvent(hSortElementsEvent);
+	WaitForSingleObject(hDataFilled, INFINITE);
 	
 	vector<int> secondTaskVec;
 
-	for (int i = i; i < arrayLength; i++) {
+	for (int i = 1; i < arrayLength; i++) {
 		secondTaskVec.push_back(sharedArray[i]);
 	}
 
@@ -37,9 +34,9 @@ int main()
 		unDuplicatedSet.insert(secondTaskVec[i]);
 	}
 
-	SetEvent(hReadyToOutPut);
-	CloseHandle(hDeleteNegativeElementsEvent);
-	CloseHandle(hSortElementsEvent);
-	CloseHandle(hReadyToOutPut);
+	UnmapViewOfFile(pointerBuffer);
+	CloseHandle(hSharedArray);
+	CloseHandle(hDataFilled);
+
 	return 0;
 }
