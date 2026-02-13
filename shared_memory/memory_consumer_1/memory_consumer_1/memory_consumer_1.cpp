@@ -1,6 +1,7 @@
 ﻿#include <iostream>
 #include <windows.h>
 #include "merge_sort.h"
+#include <set>
 
 using namespace std;
 
@@ -15,45 +16,39 @@ int main()
 	HANDLE hSortElementsEvent = OpenEvent(EVENT_ALL_ACCESS, TRUE, L"Sort");
 
 	int arrayLength = sharedArray[0];
-	int firstPart = arrayLength / 2;
+	int middle = arrayLength / 2;
 
 
 	WaitForSingleObject(hDeleteNegativeElementsEvent, INFINITE);
 	ResetEvent(hDeleteNegativeElementsEvent);
+
+	vector<int> firstTaskVec;
+	for (int i = 1; i < arrayLength; i++) {
+		firstTaskVec.push_back(sharedArray[i]);
+	}
+	runMergeSort(firstTaskVec);
+
 	
-	vector<int> sortedFirstPart;
-	for (int i = 1; i < firstPart; i++) {
-		sortedFirstPart.push_back(sharedArray[i]);
-	}
-	runMergeSort(sortedFirstPart);
+	int sum = 0;
 
-	for (int i = 1; i < firstPart; i++) {
-		sharedArray[i] = sortedFirstPart[i - 1];
+	for (int i = 0; i < firstTaskVec.size(); i++) {
+		sum += firstTaskVec[i];
 	}
 
-	SetEvent(hSortElementsEvent);
+	int arithmeticMean = sum / firstTaskVec.size();
+
+
+	int median = 0;
+	if (firstTaskVec.size() % 2 == 0) {
+		median = ((firstTaskVec.size() / 2 - 1) + (firstTaskVec.size() / 2)) / 2;
+	}
+	else {
+		median = firstTaskVec.size() / 2;
+	}
+
 	
-	WaitForSingleObject(hDeleteNegativeElementsEvent, INFINITE);
-	ResetEvent(hDeleteNegativeElementsEvent);
 
-	vector<int> secondPartOfArray;
-	for (int i = firstPart; i < arrayLength; i++) {
-		if (sharedArray[i] >= -1) {
-			secondPartOfArray.push_back(sharedArray[i]);
-		}
-		else {
-			secondPartOfArray.push_back(0);
-		}
-	}
 
-	int j = 0;
-	for (int i = firstPart; i < arrayLength; i++) {
-		sharedArray[i] = secondPartOfArray[j];
-		j++;
-	};
-
-	SetEvent(hSortElementsEvent);
-	ResetEvent(hDeleteNegativeElementsEvent);
 
 	
 	CloseHandle(hDeleteNegativeElementsEvent);
