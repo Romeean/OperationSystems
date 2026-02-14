@@ -1,0 +1,2 @@
+#define LIST_API __declspec(dllexport)
+#define LIST_API __declspec(dllimport)

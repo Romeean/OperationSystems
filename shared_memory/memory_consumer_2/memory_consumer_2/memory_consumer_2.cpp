@@ -23,15 +23,13 @@ int main()
 		NULL
 	);
 
-
 	WaitForSingleObject(hDataFilled2, INFINITE);
-
 	void* pointerBuffer = MapViewOfFile(hSharedArray, FILE_MAP_ALL_ACCESS, 0, 0, 0);
 	int* sharedArray = (int*)pointerBuffer;
 	int arrayLength = sharedArray[0];
 	int middle = arrayLength / 2;
-
 	vector<int> secondTaskVec;
+	
 	for (int i = 1; i < arrayLength; i++) {
 		if (!(sharedArray[i] < -1)){
 			secondTaskVec.push_back(sharedArray[i]);
@@ -43,7 +41,6 @@ int main()
 	}
 
 	WaitForSingleObject(hWriteAccess, INFINITE);
-
 	SetFilePointer(
 		hFile,      
 		0,          
@@ -63,17 +60,10 @@ int main()
 	}
 	
 	string data = oss.str();
-	
 	DWORD bytesWritten;
-	
 	BOOL success = WriteFile(hFile, data.c_str(), data.length(), &bytesWritten, NULL);
 	
-	if (success) {
-		cout << "Consumer 2: Successfully wrote " << bytesWritten << " bytes" << endl;
-	}
-	else {
-		cout << "Consumer 2: Write failed. Error: " << GetLastError() << endl;
-	}
+	
 
 	SetEvent(hConsumer2);
 

@@ -14,6 +14,3 @@ extern "C" {
   // Твоя функция экспорта
   MERGESORT_API void runMergeSort(std::vector<int>& array);
 }
-
-// Стандартные примеры VS (класс Cmergesort и переменные) можно удалить, 
-// чтобы они не засоряли код, если ты их не используешь.

@@ -61,9 +61,7 @@ using namespace std;
    return merge(leftVector, rightVector);
 }
 
-// ЭКСПОРТИРУЕМАЯ ФУНКЦИЯ
 MERGESORT_API void runMergeSort( vector<int>& array) {
   if (array.empty()) return;
   array = merge_sort(array);
 }
-

@@ -29,7 +29,6 @@ int main()
 	HANDLE hFile				=	CreateFile(L"results.txt", GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	
 	WaitForSingleObject(hDataFilled1, INFINITE);
-
 	void* pointerBuffer = MapViewOfFile(hSharedArray, FILE_MAP_ALL_ACCESS, 0, 0, 0);
 	int* sharedArray = (int*)pointerBuffer;
 	int arrayLength = sharedArray[0];
@@ -57,7 +56,7 @@ int main()
 
 	ostringstream oss;
 	oss << "CONSUMER 1 RESULTS (Second half)\n";
-	oss << "Original size: " << firstTaskVec.size() << "\n";
+	oss << "Original size: " << arrayLength << "\n";
 	for (int i = 0; i < firstTaskVec.size(); i++) {
 		oss << firstTaskVec[i] << ", ";
 	}
@@ -68,14 +67,6 @@ int main()
 	string data = oss.str();
 	DWORD bytesWritten;
 	BOOL success = WriteFile(hFile, data.c_str(), data.length(), &bytesWritten, NULL);
-
-	if (success) {
-		cout << "Consumer 1: Successfully wrote " << bytesWritten << " bytes" << endl;
-	}
-	else {
-		cout << "Consumer 1: Write failed. Error: " << GetLastError() << endl;
-	}
-
 
 	SetEvent(hWriteAccess);
 

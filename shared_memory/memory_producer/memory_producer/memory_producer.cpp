@@ -32,10 +32,6 @@ int main()
     NULL
     );
 
-  if (!hFile) {
-    cout << "Could not open file, error: " << GetLastError() << endl;
-  }
-
   // первый процесс
   STARTUPINFO siFirstProducer;
   PROCESS_INFORMATION piFirstProducer;
@@ -72,7 +68,6 @@ int main()
     sharedArray[i] = (rand() % 2001) - 1000;
   }
 
-
   if (!CreateProcess(NULL, path1, NULL, NULL, FALSE, 0, NULL, NULL, &siFirstProducer, &piFirstProducer)) {
     cout << "Error starting Consumer 1: " << GetLastError() << endl;
     return 1;
@@ -88,7 +83,6 @@ int main()
 
   SetEvent(hDataFilled1);
   SetEvent(hDataFilled2);
-
   
   WaitForSingleObject(hConsumer1, INFINITE);
 
@@ -96,10 +90,6 @@ int main()
   
   HANDLE processes[] = { piFirstProducer.hProcess, piSecondProducer.hProcess };
   WaitForMultipleObjects(2, processes, TRUE, INFINITE);
-
-
-  cout << "Check results.txt for output" << endl;
-  
 
   CloseHandle(piFirstProducer.hProcess);
   CloseHandle(piFirstProducer.hThread);
