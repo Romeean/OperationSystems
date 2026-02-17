@@ -12,7 +12,9 @@ int main()
 {
   vector<int> array = { 124,1254,346,5,4356,243,2,63,456,234,2,634,56,34 };
   int choice = -1;
+
   while (true) {
+    cout << endl;
     cout << "1. Sort vector with .dll obviously. " << endl;
     cout << "2. Do some action with .dll that import's implicitly a List class. " << endl;
     cout << "Your choice: ";
@@ -38,11 +40,20 @@ int main()
           cout << number << " " << endl;
         }
         FreeLibrary(hDLL);
+        break;
       };
       case 2: {
         List myList;
         myList.add(10);
+        myList.add(20);
+        myList.add(30);
+        myList.add(40);
+        
+        cout << "Lists size: " << myList.size() << endl;
+
+        myList.print();
       
+        break;
       }
       default :{
         cout << "Invalid input. Try again." << endl; 

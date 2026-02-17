@@ -20,14 +20,19 @@ int GetMedianSortedArray(vector<int>& sortedArray) {
 	return median;
 }
 
+wchar_t fileName[] = L"C:\\Users\\user\\source\\repos\\OperationSystems\\shared_memory\\memory_producer\\x64\\Debug\\results.txt";
+
+
 int main()
 {
 	HANDLE hSharedArray = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE, L"sharedArray");
 	HANDLE hDataFilled1 = OpenEvent(EVENT_ALL_ACCESS, FALSE, L"DataFilled1");
 	HANDLE hWriteAccess = OpenEvent(EVENT_ALL_ACCESS, FALSE, L"WriteAccess");
 	HANDLE hConsumer1		= OpenEvent(EVENT_ALL_ACCESS, FALSE, L"Consumer1");
-	HANDLE hFile				=	CreateFile(L"results.txt", GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	
+	HANDLE hFile				=	CreateFile(fileName, GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (!hFile) {
+		cout << "Consumer_1 coudln't find the file:" << endl;
+	}
 	WaitForSingleObject(hDataFilled1, INFINITE);
 	void* pointerBuffer = MapViewOfFile(hSharedArray, FILE_MAP_ALL_ACCESS, 0, 0, 0);
 	int* sharedArray = (int*)pointerBuffer;
@@ -45,7 +50,7 @@ int main()
 		sum += firstTaskVec[i];
 	}
 	
-	int arithmeticMean = sum / firstTaskVec.size();
+	int arithmeticMean = sum / arrayLength;
 	int median = GetMedianSortedArray(firstTaskVec);
 	SetFilePointer(
 		hFile,
@@ -67,8 +72,12 @@ int main()
 	string data = oss.str();
 	DWORD bytesWritten;
 	BOOL success = WriteFile(hFile, data.c_str(), data.length(), &bytesWritten, NULL);
+	CloseHandle(hFile);
+
 
 	SetEvent(hWriteAccess);
+
+
 
 	UnmapViewOfFile(pointerBuffer);
 	CloseHandle(hSharedArray);

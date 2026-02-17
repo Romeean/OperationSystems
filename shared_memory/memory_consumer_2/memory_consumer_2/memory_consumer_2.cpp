@@ -6,6 +6,8 @@
 
 using namespace std;
 
+wchar_t fileName[] = L"C:\\Users\\user\\source\\repos\\OperationSystems\\shared_memory\\memory_producer\\x64\\Debug\\results.txt";
+
 
 int main()
 {
@@ -13,15 +15,12 @@ int main()
 	HANDLE hSharedArray = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE, L"sharedArray");
 	HANDLE hWriteAccess = OpenEvent(EVENT_ALL_ACCESS, FALSE, L"WriteAccess");
 	HANDLE hConsumer2 = OpenEvent(EVENT_ALL_ACCESS, FALSE, L"Consumer2");
-	HANDLE hFile = CreateFile(
-		L"results.txt",
-		GENERIC_WRITE,
-		FILE_SHARE_READ | FILE_SHARE_WRITE,
-		NULL,
-		OPEN_EXISTING,
-		FILE_ATTRIBUTE_NORMAL,
-		NULL
-	);
+	HANDLE hFile = CreateFile(fileName, GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	
+	if (!hFile) {
+		cout << "Consumer_1 coudln't find the file:" << endl;
+	}
+
 
 	WaitForSingleObject(hDataFilled2, INFINITE);
 	void* pointerBuffer = MapViewOfFile(hSharedArray, FILE_MAP_ALL_ACCESS, 0, 0, 0);
@@ -62,9 +61,9 @@ int main()
 	string data = oss.str();
 	DWORD bytesWritten;
 	BOOL success = WriteFile(hFile, data.c_str(), data.length(), &bytesWritten, NULL);
+	CloseHandle(hFile);
 	
 	
-
 	SetEvent(hConsumer2);
 
 	UnmapViewOfFile(pointerBuffer);

@@ -10,13 +10,13 @@ using namespace std;
 
 wchar_t path1[] = L"C:\\Users\\user\\source\\repos\\OperationSystems\\shared_memory\\memory_consumer_1\\x64\\Debug\\memory_consumer_1.exe";
 wchar_t path2[] = L"C:\\Users\\user\\source\\repos\\OperationSystems\\shared_memory\\memory_consumer_2\\x64\\Debug\\memory_consumer_2.exe";
-wchar_t fileName[] = L"results.txt";
+wchar_t fileName[] = L"C:\\Users\\user\\source\\repos\\OperationSystems\\shared_memory\\memory_producer\\x64\\Debug\\results.txt";
 
 int main()
 {
   srand(static_cast<unsigned int>(time(0)));
 
-  HANDLE hDataFilled1  = CreateEvent(NULL, FALSE, FALSE, L"DataFilled1");
+  HANDLE hDataFilled1 = CreateEvent(NULL, FALSE, FALSE, L"DataFilled1");
   HANDLE hDataFilled2 = CreateEvent(NULL, FALSE, FALSE, L"DataFilled2");
   HANDLE hWriteAccess = CreateEvent(NULL, FALSE, FALSE, L"WriteAccess");
   HANDLE hConsumer1   = CreateEvent(NULL, FALSE, FALSE, L"Consumer1");
@@ -31,6 +31,10 @@ int main()
     FILE_ATTRIBUTE_NORMAL,
     NULL
     );
+  if (!hFile) {
+    cout << "Memory producer. problem with file" << endl;
+  }
+
 
   // первый процесс
   STARTUPINFO siFirstProducer;
@@ -72,7 +76,6 @@ int main()
     cout << "Error starting Consumer 1: " << GetLastError() << endl;
     return 1;
   }
-  cout << "Consumer 1 started (PID: " << piFirstProducer.dwProcessId << ")" << endl;
 
   if (!CreateProcess(NULL, path2, NULL, NULL, FALSE, 0, NULL, NULL, &siSecondProducer, &piSecondProducer)) {
     cout << "Error starting Consumer 2: " << GetLastError() << endl;
@@ -102,6 +105,7 @@ int main()
   CloseHandle(hConsumer2);
   UnmapViewOfFile(pointerBuff);
   CloseHandle(hSharedArray);
+  CloseHandle(hFile);
 
   return 0;
 }

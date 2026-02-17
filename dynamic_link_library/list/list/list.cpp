@@ -132,3 +132,14 @@ int List::size() {
 
 	return index;
 }
+
+void List::print() {
+	Node* currentElement = list.head;
+
+	while (currentElement != nullptr) {
+		cout << currentElement->element << ", ";
+		currentElement = currentElement->nextNode;
+	}
+
+	return;
+}

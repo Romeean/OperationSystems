@@ -27,4 +27,6 @@ public:
 	void del(int position);
 	void insert(int position, int element);
 	int size();
+	void print();
+
 };
