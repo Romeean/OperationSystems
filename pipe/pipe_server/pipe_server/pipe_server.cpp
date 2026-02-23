@@ -37,13 +37,6 @@ int main()
 	si.hStdError	= GetStdHandle(STD_ERROR_HANDLE);
 
 
-		
-
-
-	
-	
-
-
 	int choice = -1;
 	while (true) {
 		
