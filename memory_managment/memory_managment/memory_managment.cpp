@@ -20,7 +20,6 @@ string GetRegionType(DWORD element) {
 		default: return "UNKNOWN";
 	}
 }
-
 string GetState(DWORD element) {
 	switch (element) {
 		case MEM_COMMIT: {
@@ -39,7 +38,6 @@ string GetState(DWORD element) {
 		default: return "UNKNOWN";
 	}
 }
-
 string GetProtect(DWORD element) {
 	switch (element) {
 	case PAGE_READONLY: {
@@ -70,58 +68,66 @@ string GetProtect(DWORD element) {
 	}
 }
 
+
 int main()
 {
-	// FIRST PART
+	int choice = -1;
 	SYSTEM_INFO si;
-	GetSystemInfo(&si);
 
-	cout << "Page size: " << si.dwPageSize << endl;
-	cout << "Smallest VAS: " << si.lpMinimumApplicationAddress << endl;
-	cout << "Bigest VAS: " << si.lpMaximumApplicationAddress << endl;
-	
-	MEMORYSTATUSEX ms;
-	ms.dwLength = sizeof(ms);
 
-	GlobalMemoryStatusEx(&ms);
+	while (true) {
+		cout << "";
+		switch (choice) {
+		case 1: {
+			GetSystemInfo(&si);
 
-	cout << "Total memory copacity (RAM): " << ms.ullTotalPhys / (1024 * 1024 * 1024) << "GB" << endl;
-	cout << "Available memory copacity (RAM): " << ms.ullAvailPhys / (1024 * 1024 * 1024) << "GB" << endl;
-	cout << endl;
-	cout << "Total memory copacity (TotalPageFile): " << ms.ullTotalPageFile / (1024 * 1024 * 1024) << "GB" << endl;
-	//                                                            |
-	//                                        значение которое отвечает за количество доступной памяти 
-	//                                        систмеме = RAM + файлы подкачки
-	cout << "Available memory copacity (TotalPageFile): " << ms.ullAvailPageFile / (1024ULL * 1024 * 1024 * 1024) << "GB" << endl;
-	cout << endl;
+			cout << "Page size: " << si.dwPageSize << endl;
+			cout << "Smallest VAS: " << si.lpMinimumApplicationAddress << endl;
+			cout << "Bigest VAS: " << si.lpMaximumApplicationAddress << endl;
 
-	cout << "Total memory copacity (ullTotalVirtual): " << ms.ullTotalVirtual / (1024ULL * 1024 * 1024 * 1024) << "TB" << endl;
-	//                                                            |
-	//                                        объем логической памяти доступный каждому процессу, представленно как 
-	//                                        сплошной массив, объемом 128 терабайт.
-	cout << "Total copacity (Paging file): " << (ms.ullTotalPageFile - ms.ullTotalPhys) / (1024 * 1024 * 1024) << "GB" << endl;
- 
-	cout << endl;
-	
-	// SECOND PART  
+			MEMORYSTATUSEX ms;
+			ms.dwLength = sizeof(ms);
 
-	LPVOID currentAddress = si.lpMinimumApplicationAddress;
-	LPVOID maximumAddress = si.lpMaximumApplicationAddress;
+			GlobalMemoryStatusEx(&ms);
 
-	MEMORY_BASIC_INFORMATION mbi;
+			cout << "Total memory copacity (RAM): " << ms.ullTotalPhys / (1024 * 1024 * 1024) << "GB" << endl;
+			cout << "Available memory copacity (RAM): " << ms.ullAvailPhys / (1024 * 1024 * 1024) << "GB" << endl;
+			cout << endl;
+			cout << "Total memory copacity (TotalPageFile): " << ms.ullTotalPageFile / (1024 * 1024 * 1024) << "GB" << endl;
+			//                                                            |
+			//                                        значение которое отвечает за количество доступной памяти 
+			//                                        систмеме = RAM + файлы подкачки
+			cout << "Available memory copacity (TotalPageFile): " << ms.ullAvailPageFile / (1024ULL * 1024 * 1024 * 1024) << "GB" << endl;
+			cout << endl;
 
-	while (currentAddress < maximumAddress) {
-		if (VirtualQuery(currentAddress, &mbi, sizeof(mbi)) == 0) break;
-		
-		cout << "Base address: " << mbi.BaseAddress << endl;
-		cout << "Region size: " << mbi.RegionSize << endl;
+			cout << "Total memory copacity (ullTotalVirtual): " << ms.ullTotalVirtual / (1024ULL * 1024 * 1024 * 1024) << "TB" << endl;
+			//                                                            |
+			//                                        объем логической памяти доступный каждому процессу, представленно как 
+			//                                        сплошной массив, объемом 128 терабайт.
+			cout << "Total copacity (Paging file): " << (ms.ullTotalPageFile - ms.ullTotalPhys) / (1024 * 1024 * 1024) << "GB" << endl;
 
-		cout << "Region type: " << GetRegionType(mbi.Type) << endl;
-		cout << "State: " << GetState(mbi.State) << endl;
-		cout << "Protect: " << GetProtect(mbi.Protect) << endl;
-		cout << endl;
-		currentAddress = (LPBYTE)mbi.BaseAddress + mbi.RegionSize;
-	}
-	return 0;
+			cout << endl;
+
+		}
+		case 2: {
+			LPVOID currentAddress = si.lpMinimumApplicationAddress;
+			LPVOID maximumAddress = si.lpMaximumApplicationAddress;
+
+			MEMORY_BASIC_INFORMATION mbi;
+
+			while (currentAddress < maximumAddress) {
+				if (VirtualQuery(currentAddress, &mbi, sizeof(mbi)) == 0) break;
+
+				cout << "Base address: " << mbi.BaseAddress << endl;
+				cout << "Region size: " << mbi.RegionSize << endl;
+
+				cout << "Region type: " << GetRegionType(mbi.Type) << endl;
+				cout << "State: " << GetState(mbi.State) << endl;
+				cout << "Protect: " << GetProtect(mbi.Protect) << endl;
+				cout << endl;
+				currentAddress = (LPBYTE)mbi.BaseAddress + mbi.RegionSize;
+			}
+		}
+	}}
 }
 
