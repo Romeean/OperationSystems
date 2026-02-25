@@ -26,7 +26,7 @@ int main()
 
     switch (choice) {
       case 1: {
-        HMODULE hDLL = LoadLibrary(L"C:\\Users\\user\\source\\repos\\OperationSystems\\dynamic_link_library\\merge_sort\\x64\\Debug\\mergesort.dll");
+        HMODULE hDLL = LoadLibrary(L"C:\\Users\\Владимир\\source\\repos\\OperationSystems\\dynamic_link_library\\merge_sort\\x64\\Debug\\mergesort.dll");
         if (!hDLL) {
           cout << "Couldn't find a DLL " << endl;
         }
