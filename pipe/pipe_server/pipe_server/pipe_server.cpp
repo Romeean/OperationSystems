@@ -40,50 +40,35 @@ int main()
 	if (!CreateProcess(NULL, path_desctop, NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi)) {
 		cout << "Error with process: " << GetLastError() << endl;
 	}
-<<<<<<< HEAD
-
-	si.hStdInput	= hReadPipe;
-	si.hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
-	si.hStdError	= GetStdHandle(STD_ERROR_HANDLE);
 
 
-	int choice = -1;
-	while (true) {
-		
-		cout << "What you want to send to client?" << endl;
-		cout << "1. create an array and sent it to the client and sort it." << endl;
-		cout << "2. create an array and sent it to the client and cout all of the unique elements.  " << endl;
-		
-		while (!(cin >> choice)) {
-			cout << "Invalid input. Try again";
-=======
-		
-	cout << "Create an array and sent it to the client." << endl;
-	
-	vector<int> array;
-	size_t length;
+		cout << "Create an array, send it to the client, and sort it" << endl;
 
-	cout << "Enter desired length of the array: ";
-	while (!(cin >> length)) {
-		cout << "Invalid input. Try again" << endl;
-		cin.clear();
-		cin.ignore((numeric_limits<streamsize>::max)(), '\n');
-	}
-	for (size_t i = 0; i < length; i++) {
-		int number;
-		cout << "Enter " << i + 1 << "value is: ";
-		while (!(cin >> number)) {
+		vector<int> array;
+		size_t length;
+
+		cout << "Enter desired length of the array: ";
+		while (!(cin >> length)) {
 			cout << "Invalid input. Try again" << endl;
->>>>>>> 0a44165d6fa4f6062f7ebd042419aeed4519b3c3
 			cin.clear();
 			cin.ignore((numeric_limits<streamsize>::max)(), '\n');
 		}
-		array.push_back(number);
-	}
-	
-	DWORD dwWritten;
-	WriteFile(hWritePipe, &length, sizeof(size_t), &dwWritten, NULL); 
-	WriteFile(hWritePipe, array.data(), length * sizeof(int), &dwWritten, NULL); 
+
+		for (size_t i = 0; i < length; i++) {
+			int number;
+			cout << "Enter " << i + 1 << " value is: ";
+			while (!(cin >> number)) {
+				cout << "Invalid input. Try again" << endl;
+				cin.clear();
+				cin.ignore((numeric_limits<streamsize>::max)(), '\n');
+			}
+			array.push_back(number);
+		}
+
+		DWORD dwWritten;
+		WriteFile(hWritePipe, &length, sizeof(size_t), &dwWritten, NULL);
+		WriteFile(hWritePipe, array.data(), length * sizeof(int), &dwWritten, NULL);
+		
 
 	CloseHandle(hWritePipe);
 	CloseHandle(hReadPipe);
