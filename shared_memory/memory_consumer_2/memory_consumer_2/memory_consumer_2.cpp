@@ -6,7 +6,7 @@
 
 using namespace std;
 
-wchar_t fileName[] = L"C:\\Users\\user\\source\\repos\\OperationSystems\\shared_memory\\memory_producer\\x64\\Debug\\results.txt";
+wchar_t fileName[] = L"C:\\Users\\Владимир\\source\\repos\\OperationSystems\\shared_memory\\memory_producer\\x64\\Debug\\results.txt";
 
 
 int main()

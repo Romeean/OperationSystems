@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <windows.h>
+#include <vector>
 #include "merge_sort.h"
 
 using namespace std;
@@ -20,7 +21,7 @@ int GetMedianSortedArray(vector<int>& sortedArray) {
 	return median;
 }
 
-wchar_t fileName[] = L"C:\\Users\\user\\source\\repos\\OperationSystems\\shared_memory\\memory_producer\\x64\\Debug\\results.txt";
+wchar_t fileName[] = L"C:\\Users\\Владимир\\source\\repos\\OperationSystems\\shared_memory\\memory_producer\\x64\\Debug\\results.txt";
 
 
 int main()
@@ -60,7 +61,7 @@ int main()
 	);
 
 	ostringstream oss;
-	oss << "CONSUMER 1 RESULTS (Second half)\n";
+	oss << "CONSUMER 1 RESULTS (First half)\n";
 	oss << "Original size: " << arrayLength << "\n";
 	for (int i = 0; i < firstTaskVec.size(); i++) {
 		oss << firstTaskVec[i] << ", ";
@@ -68,6 +69,7 @@ int main()
 	oss << "\n";
 	oss << "Arithmetic mean: " << arithmeticMean << "\n";
 	oss << "Median: " << median << "\n";
+	oss << "\n";
 
 	string data = oss.str();
 	DWORD bytesWritten;
@@ -76,8 +78,6 @@ int main()
 
 
 	SetEvent(hWriteAccess);
-
-
 
 	UnmapViewOfFile(pointerBuffer);
 	CloseHandle(hSharedArray);

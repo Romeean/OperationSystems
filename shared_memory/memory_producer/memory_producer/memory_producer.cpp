@@ -8,9 +8,10 @@
 using namespace std;
 
 
-wchar_t path1[] = L"C:\\Users\\user\\source\\repos\\OperationSystems\\shared_memory\\memory_consumer_1\\x64\\Debug\\memory_consumer_1.exe";
-wchar_t path2[] = L"C:\\Users\\user\\source\\repos\\OperationSystems\\shared_memory\\memory_consumer_2\\x64\\Debug\\memory_consumer_2.exe";
-wchar_t fileName[] = L"C:\\Users\\user\\source\\repos\\OperationSystems\\shared_memory\\memory_producer\\x64\\Debug\\results.txt";
+wchar_t path1[] = L"C:\\Users\\Владимир\\source\\repos\\OperationSystems\\shared_memory\\memory_consumer_1\\x64\\Debug\\memory_consumer_1.exe";
+wchar_t path2[] = L"C:\\Users\\Владимир\\source\\repos\\OperationSystems\\shared_memory\\memory_consumer_2\\x64\\Debug\\memory_consumer_2.exe";
+wchar_t fileName[] = L"C:\\Users\\Владимир\\source\\repos\\OperationSystems\\shared_memory\\memory_producer\\x64\\Debug\\results.txt";
+
 
 int main()
 {
@@ -98,6 +99,8 @@ int main()
   CloseHandle(piFirstProducer.hThread);
   CloseHandle(piSecondProducer.hProcess);
   CloseHandle(piSecondProducer.hThread);
+
+  cout << "Completed " << endl;
   CloseHandle(hDataFilled1);
   CloseHandle(hDataFilled2);
   CloseHandle(hWriteAccess);
