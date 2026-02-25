@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="socket_client/socket_client.vcxproj" />
+  <Project Path="socket_client/socket_client.vcxproj" Id="073745ce-7787-469d-b54e-05ccd337881f" />
 </Solution>
